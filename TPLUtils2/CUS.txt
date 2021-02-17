@@ -10,9 +10,10 @@
 <entry key="自訂Title">臺北市立圖書館圖書狀態點收查詢系統</entry>
 <entry key="目前之流水編號">2441</entry>
 <entry key="流水編號種類">0</entry>
-<entry key="需提醒館藏館_18Y">3</entry>
+<entry key="需提醒館藏館_NRRC">2</entry>
 <entry key="每頁上下列印份數">2</entry>
 <entry key="每頁列印份數">4</entry>
 <entry key="流水編號最小值">1</entry>
-<entry key="需提醒館藏類型_18Y">3</entry>
+<entry key="需提醒館藏類型_HOT-BOOK">4</entry>
+<entry key="需提醒館藏類型_HOT-BA">4</entry>
 </properties>

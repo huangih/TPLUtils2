@@ -182,7 +182,9 @@ public class NetManager extends Thread {
 				// 20150114陳躍升新增其他區域中心直接調給總館程式
 				if (taskId.matches("^[A-M]RRC.*") || taskId.matches("^[O-Z]RRC.*")) {
 					m = new LinkedHashMap<String, String>();
-					m.put("nt", CUS.BranchID);
+					int n = CUS.BranchID.indexOf(',');
+					String brnID = n < 1 ? CUS.BranchID : CUS.BranchID.substring(0, n);
+					m.put("nt", brnID);
 					m.put("nu", "C01");
 					m.put("warn", "送總館");
 					displayResult(3, m);

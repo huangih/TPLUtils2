@@ -26,9 +26,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 public class ReceiveMan {
-	private static final String[] styleColor = new String[] { "chkItem_holds",
-			"chkItem_place", "chkItem_transit", "chkItem_warn", "chkItem_holds",
-			"chkItem_err" };
+	private static final String[] styleColor = new String[] { "chkItem_holds", "chkItem_place", "chkItem_transit",
+			"chkItem_warn", "chkItem_holds", "chkItem_err" };
 	private NetManager netMan;
 	private Composite inComposite;
 	private Composite diagComposite;
@@ -53,17 +52,14 @@ public class ReceiveMan {
 		resComposite = new Composite(sash, SWT.NONE);
 		createInComp();
 		diagComposite.setLayout(new FillLayout());
-		diagText = createTextComp(diagComposite, SWT.SINGLE, "Arial", 24,
-				SWT.BOLD);
+		diagText = createTextComp(diagComposite, SWT.SINGLE, "Arial", 24, SWT.BOLD);
 		diagText.setText(netMan.getSeqNum(0));
-		locText = createTextComp(diagComposite, SWT.SINGLE, "Arial", 24,
-				SWT.BOLD);
-		locText.setText("");
+		this.locText = createTextComp(diagComposite, SWT.SINGLE, "Arial", 24, SWT.BOLD);
+		this.locText.setText("");
 
 		resComposite.setLayout(new FillLayout());
-		resText = createTextComp(resComposite, SWT.MULTI | SWT.WRAP, "Arial",
-				12, SWT.NORMAL);
-		resText.setText("點收結果");
+		this.resText = createTextComp(resComposite, SWT.MULTI | SWT.WRAP, "Arial", 12, SWT.NORMAL);
+		this.resText.setText("點收結果");
 
 		sash.setWeights(new int[] { 30, 40, 40 });
 		inComposite.pack();
@@ -72,12 +68,10 @@ public class ReceiveMan {
 		composite.pack();
 	}
 
-	private Text createTextComp(Composite parent, int style, String fontName,
-			int height, int fontStyle) {
+	private Text createTextComp(Composite parent, int style, String fontName, int height, int fontStyle) {
 		Text text = new Text(parent, style);
 		text.setEditable(false);
-		final Font newFont = new Font(parent.getDisplay(), fontName, height,
-				fontStyle);
+		final Font newFont = new Font(parent.getDisplay(), fontName, height, fontStyle);
 		text.setFont(newFont);
 		text.addDisposeListener(new DisposeListener() {
 			public void widgetDisposed(DisposeEvent e) {
@@ -98,8 +92,7 @@ public class ReceiveMan {
 		data.grabExcessVerticalSpace = true;
 		label.setLayoutData(data);
 
-		this.text = createTextComp(inComposite, SWT.BORDER, "Arial", 16,
-				SWT.BOLD);
+		this.text = createTextComp(inComposite, SWT.BORDER, "Arial", 16, SWT.BOLD);
 		data = new GridData();
 		data.horizontalAlignment = GridData.FILL;
 		data.verticalAlignment = GridData.FILL;
@@ -140,19 +133,20 @@ public class ReceiveMan {
 			}
 		});
 	}
-	
-	//外掛點收顯示
-	public void setResultData(int style, Map<String, String> respsChk,
-			String seqNum) {
-		locText.setText("");
+
+	// 外掛點收顯示
+	public void setResultData(int style, Map<String, String> respsChk, String seqNum) {
+		this.locText.setText("");
 		String respStr = "";
+		Display display = this.locText.getDisplay();
+		Color color = null;
 		switch (style) {
 		case -1:
 			// diagText.setForeground(colors[5]);
 			diagText.setForeground(CUS.CR.get(styleColor[5]));
 			diagText.setText(respsChk.get("err"));
-			
-			locText.setText(respsChk.get("MA"));
+
+			this.locText.append(respsChk.get("MA"));
 
 			break;
 		case 1:
@@ -171,7 +165,7 @@ public class ReceiveMan {
 					respStr += ma + "\n";
 			} else
 				respStr += "已點收或workFlow處理過" + "\n";
-			
+
 			break;
 
 		// default:
@@ -179,97 +173,120 @@ public class ReceiveMan {
 		// diagText.setText(str);
 		// break;
 		}
+		String itemType = respsChk.get("IG");
+		String location = "";
 		switch (style) {
 		case 0:
 			for (String key : respsChk.keySet()) {
 				respStr += key + respsChk.get(key) + "^";
 			}
 			respStr += "\n";
-			
+
 		case 1:
 		case 5:
-			if (style == 1 && !respsChk.get("HK").equals("TITLE")) {				
-				locText.setText(respsChk.get("UO"));
-				
-				//locText.setForeground(colors[1]);
-				locText.setForeground(CUS.CR.get(styleColor[1]));
+			String userID = respsChk.get("UO");
+			if (style == 1 && !respsChk.get("HK").equals("TITLE")) {
+				// locText.setForeground(colors[1]);
+				this.locText.setForeground(CUS.CR.get(styleColor[1]));
+				this.locText.append(userID);
 			}
-			
-			if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-				locText.setText("熱門館藏!");
-			
-			respStr += "讀者證號 : " + respsChk.get("UO") + "    取書期限 : "
-					+ respsChk.get("GB") + "\n";
-			
+
+			if (CUS.specialItemtypeMap.containsKey(itemType)) {
+				color = display.getSystemColor(CUS.specialItemtypeMap.get(itemType));
+				this.locText.setForeground(color);
+				this.locText.append("熱門館藏!");
+			}
+//			if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
+//				this.locText.setText();
+//
+			respStr += "讀者證號 : " + userID + "    取書期限 : " + respsChk.get("GB") + "\n";
+
 			break;
 
 		case 2:
-			String location = respsChk.get("IL");
+			String library = respsChk.get("NS");
+			if (CUS.specialLibraryMap.containsKey(library)) {
+				color = display.getSystemColor(CUS.specialLibraryMap.get(library));
+				this.locText.setForeground(color);
+				this.locText.append(library + " ");
+			}
+			location = respsChk.get("IL");
 			if (CUS.specialLocationMap.containsKey(location)) {
-				Display display = Display.getCurrent();
-				display = locText.getDisplay();
-				Color color = display.getSystemColor(
-						CUS.specialLocationMap.get(location));
-				
-				//陳躍升20140120新增熱門館藏註記
-				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-					locText.setText(location + "\n熱門館藏");
-				else
-					locText.setText(location);
-				
-				locText.setForeground(color);
+//				Display display = Display.getCurrent();
+//				display = locText.getDisplay();
+				color = display.getSystemColor(CUS.specialLocationMap.get(location));
+				this.locText.setForeground(color);
+				this.locText.append(location + " ");
 			}
-			else
-			{
-				//陳躍升20140120新增熱門館藏註記
-				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-					locText.setText("熱門館藏");
+			if (CUS.specialItemtypeMap.containsKey(itemType)) {
+				color = display.getSystemColor(CUS.specialItemtypeMap.get(itemType));
+				this.locText.setForeground(color);
+				this.locText.append("熱門館藏!");
+			}
+//				// 陳躍升20140120新增熱門館藏註記
+//				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
+//					locText.setText(location + "\n熱門館藏");
+//				else
+//					locText.setText(location);
+//
+//				locText.setForeground(color);
+//			} else {
+//				// 陳躍升20140120新增熱門館藏註記
+//				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
+//					locText.setText("熱門館藏");
+//
+//			}
 
-			}
-			
-				respStr += "請上架至" + location + "\n";			
-			
+			respStr += "請上架至" + location + "\n";
+
 			break;
 
 		case 3:
-			respStr += "從" + respsChk.get("nt") + "調撥至" + respsChk.get("nu")
-					+ "\n";
-			
+			respStr += "從" + respsChk.get("nt") + "調撥至" + respsChk.get("nu") + "\n";
+
 			break;
 
 		default:
 			location = respsChk.get("IL");
 			if (CUS.specialLocationMap.containsKey(location)) {
-				Display display = Display.getCurrent();
-				display = locText.getDisplay();
-				Color color = display.getSystemColor(
-						CUS.specialLocationMap.get(location));
-				
-				//陳躍升20140120新增熱門館藏註記
-				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-					locText.setText(location + "熱門館藏");
-				else
-					locText.setText(location);
-				
-				locText.setForeground(color);
+//				Display display = Display.getCurrent();
+//				display = locText.getDisplay();
+				color = display.getSystemColor(CUS.specialLocationMap.get(location));
+				this.locText.setForeground(color);
+				this.locText.append(location + " ");
 			}
-			else
-			{
-				//陳躍升20140120新增熱門館藏註記
-				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-					locText.setText("熱門館藏");
-
+			if (CUS.specialItemtypeMap.containsKey(itemType)) {
+				color = display.getSystemColor(CUS.specialItemtypeMap.get(itemType));
+				this.locText.setForeground(color);
+				this.locText.append("熱門館藏!");
 			}
-				
-			
+//			if (CUS.specialLocationMap.containsKey(location)) {
+////				Display display = Display.getCurrent();
+////				display = locText.getDisplay();
+//				color = display.getSystemColor(CUS.specialLocationMap.get(location));
+//
+//				// 陳躍升20140120新增熱門館藏註記
+//				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
+//					locText.setText(location + "熱門館藏");
+//				else
+//					locText.setText(location);
+//
+//				locText.setForeground(color);
+//			} else {
+//				// 陳躍升20140120新增熱門館藏註記
+//				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
+//					locText.setText("熱門館藏");
+//
+//			}
+//
 			for (String key : respsChk.keySet()) {
 				respStr += key + respsChk.get(key) + "^";
 			}
 			respStr += "\n";
-			
+
 			break;
 		}
-		resText.setText(respStr);
+		this.resText.setText(respStr);
 	}
 
 	public Text getFocusControl() {
