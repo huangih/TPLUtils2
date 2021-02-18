@@ -1,5 +1,7 @@
 package swt.client.comp;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import net.CUS;
@@ -7,6 +9,8 @@ import net.NetManager;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
@@ -15,7 +19,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -38,7 +41,7 @@ public class ReceiveMan {
 	private boolean needClear = false;
 	// private Color[] colors;
 	private Text text;
-	private Text locText;
+	private StyledText locText;
 
 	public ReceiveMan(Composite parent, NetManager netMan) {
 		this.netMan = netMan;
@@ -52,9 +55,9 @@ public class ReceiveMan {
 		resComposite = new Composite(sash, SWT.NONE);
 		createInComp();
 		diagComposite.setLayout(new FillLayout());
-		diagText = createTextComp(diagComposite, SWT.SINGLE, "Arial", 24, SWT.BOLD);
-		diagText.setText(netMan.getSeqNum(0));
-		this.locText = createTextComp(diagComposite, SWT.SINGLE, "Arial", 24, SWT.BOLD);
+		this.diagText = createTextComp(diagComposite, SWT.SINGLE, "Arial", 24, SWT.BOLD);
+		this.diagText.setText(netMan.getSeqNum(0));
+		this.locText = createStyledTextComp(diagComposite, SWT.MULTI, "Arial", 18, SWT.BOLD);
 		this.locText.setText("");
 
 		resComposite.setLayout(new FillLayout());
@@ -79,6 +82,19 @@ public class ReceiveMan {
 			}
 		});
 		return text;
+	}
+
+	private StyledText createStyledTextComp(Composite parent, int style, String fontName, int height, int fontStyle) {
+		StyledText styledText = new StyledText(parent, style);
+		styledText.setEditable(false);
+		final Font newFont = new Font(parent.getDisplay(), fontName, height, fontStyle);
+		styledText.setFont(newFont);
+		styledText.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
+				newFont.dispose();
+			}
+		});
+		return styledText;
 	}
 
 	private void createInComp() {
@@ -139,14 +155,13 @@ public class ReceiveMan {
 		this.locText.setText("");
 		String respStr = "";
 		Display display = this.locText.getDisplay();
-		Color color = null;
 		switch (style) {
 		case -1:
 			// diagText.setForeground(colors[5]);
-			diagText.setForeground(CUS.CR.get(styleColor[5]));
-			diagText.setText(respsChk.get("err"));
+			this.diagText.setForeground(CUS.CR.get(styleColor[5]));
+			this.diagText.setText(respsChk.get("err"));
 
-			this.locText.append(respsChk.get("MA"));
+			this.locText.setText(respsChk.get("MA"));
 
 			break;
 		case 1:
@@ -155,8 +170,8 @@ public class ReceiveMan {
 		case 4:
 		case 5:
 			// diagText.setForeground(colors[style - 1]);
-			diagText.setForeground(CUS.CR.get(styleColor[style - 1]));
-			diagText.setText(seqNum);
+			this.diagText.setForeground(CUS.CR.get(styleColor[style - 1]));
+			this.diagText.setText(seqNum);
 			if (respsChk.containsKey("MA")) {
 				String ma = respsChk.get("MA");
 				if (CUS.messageMap.containsKey(ma))
@@ -174,7 +189,8 @@ public class ReceiveMan {
 		// break;
 		}
 		String itemType = respsChk.get("IG");
-		String location = "";
+		String location = respsChk.get("IL");
+		List<StyleRange> srl = new ArrayList<StyleRange>();
 		switch (style) {
 		case 0:
 			for (String key : respsChk.keySet()) {
@@ -185,44 +201,22 @@ public class ReceiveMan {
 		case 1:
 		case 5:
 			String userID = respsChk.get("UO");
-			if (style == 1 && !respsChk.get("HK").equals("TITLE")) {
+			if (style == 1 && !respsChk.get("HK").equals("TITLE"))
 				// locText.setForeground(colors[1]);
-				this.locText.setForeground(CUS.CR.get(styleColor[1]));
-				this.locText.append(userID);
-			}
+				srl.add(getStyleRange(this.locText, userID + "\n", SWT.COLOR_DARK_GREEN, display));
 
-			if (CUS.specialItemtypeMap.containsKey(itemType)) {
-				color = display.getSystemColor(CUS.specialItemtypeMap.get(itemType));
-				this.locText.setForeground(color);
-				this.locText.append("熱門館藏!");
-			}
-//			if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-//				this.locText.setText();
-//
 			respStr += "讀者證號 : " + userID + "    取書期限 : " + respsChk.get("GB") + "\n";
 
 			break;
 
 		case 2:
 			String library = respsChk.get("NS");
-			if (CUS.specialLibraryMap.containsKey(library)) {
-				color = display.getSystemColor(CUS.specialLibraryMap.get(library));
-				this.locText.setForeground(color);
-				this.locText.append(library + " ");
-			}
-			location = respsChk.get("IL");
-			if (CUS.specialLocationMap.containsKey(location)) {
-//				Display display = Display.getCurrent();
-//				display = locText.getDisplay();
-				color = display.getSystemColor(CUS.specialLocationMap.get(location));
-				this.locText.setForeground(color);
-				this.locText.append(location + " ");
-			}
-			if (CUS.specialItemtypeMap.containsKey(itemType)) {
-				color = display.getSystemColor(CUS.specialItemtypeMap.get(itemType));
-				this.locText.setForeground(color);
-				this.locText.append("熱門館藏!");
-			}
+			if (CUS.specialLibraryMap.containsKey(library))
+				srl.add(getStyleRange(this.locText, library + "\n", CUS.specialLibraryMap.get(library), display));
+//				this.locText.setForeground(color);
+
+			if (CUS.specialLocationMap.containsKey(location))
+				srl.add(getStyleRange(this.locText, location + "\n", CUS.specialLocationMap.get(location), display));
 //				// 陳躍升20140120新增熱門館藏註記
 //				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
 //					locText.setText(location + "\n熱門館藏");
@@ -247,19 +241,13 @@ public class ReceiveMan {
 			break;
 
 		default:
-			location = respsChk.get("IL");
-			if (CUS.specialLocationMap.containsKey(location)) {
-//				Display display = Display.getCurrent();
-//				display = locText.getDisplay();
-				color = display.getSystemColor(CUS.specialLocationMap.get(location));
-				this.locText.setForeground(color);
-				this.locText.append(location + " ");
-			}
-			if (CUS.specialItemtypeMap.containsKey(itemType)) {
-				color = display.getSystemColor(CUS.specialItemtypeMap.get(itemType));
-				this.locText.setForeground(color);
-				this.locText.append("熱門館藏!");
-			}
+			if (CUS.specialLocationMap.containsKey(location))
+				srl.add(getStyleRange(this.locText, location + "\n", CUS.specialLocationMap.get(location), display));
+//			if (CUS.specialItemtypeMap.containsKey(itemType)) {
+//				this.locText.append("熱門館藏!");
+//				color = display.getSystemColor(CUS.specialItemtypeMap.get(itemType));
+//				this.locText.setForeground(color);
+//			}
 //			if (CUS.specialLocationMap.containsKey(location)) {
 ////				Display display = Display.getCurrent();
 ////				display = locText.getDisplay();
@@ -286,7 +274,20 @@ public class ReceiveMan {
 
 			break;
 		}
+		if (style != 3 && CUS.specialItemtypeMap.containsKey(itemType)) {
+			String s = itemType.startsWith("HOT-") ? "熱門館藏!" : itemType;
+			srl.add(getStyleRange(this.locText, s, CUS.specialItemtypeMap.get(itemType), display));
+		}
+
+		if (srl.size() > 0)
+			this.locText.setStyleRanges(srl.toArray(new StyleRange[0]));
 		this.resText.setText(respStr);
+	}
+
+	private StyleRange getStyleRange(StyledText styledText, String appendText, int color, Display display) {
+		int start = styledText.getText().length();
+		styledText.append(appendText);
+		return new StyleRange(start, appendText.length(), display.getSystemColor(color), styledText.getBackground());
 	}
 
 	public Text getFocusControl() {

@@ -390,7 +390,8 @@ public class NetManager extends Thread {
 	private Map<String, String> transitItem(Map<String, String> m) throws DataServiceException, MsgException {
 		String[] strs = new String[] { m.get("NQ"), m.get("nu"), m.get("nx"), "nr|Y" };
 		RespData resps = this.ncs.getRespDatas("hE", strs, true);
-		m = resps.getDataMap();
+		m.putAll(resps.getDataMap());
+//		m = resps.getDataMap();
 		if (CUS.TransitStatusMA.equals(m.get("MA")))
 			return m;
 		throwError("transitItem", m);
@@ -464,11 +465,11 @@ public class NetManager extends Thread {
 				}
 			}
 
-			ItemDatas[0] = seqNum;
+			this.ItemDatas[0] = seqNum;
 			((ItemListTable) showMap[style]).addListItem(this.ItemDatas); // 原程式
 			if (style == 3) {
 				String[] printStrs = new String[9];
-				System.arraycopy(ItemDatas, 1, printStrs, 4, 5);
+				System.arraycopy(this.ItemDatas, 1, printStrs, 4, 5);
 				String reason = m.get("nx");
 				// 增加運送原因符號列印，@表"通還回館"，#代表"預約到館"
 				if ("LIBRARY".equals(reason))
@@ -487,6 +488,7 @@ public class NetManager extends Thread {
 			break;
 		}
 
+		m.put("NS", this.ItemDatas[5]);
 		final String numStr = seqNum;
 		final Composite comp = showMap[0];
 		comp.getDisplay().asyncExec(new Runnable() {
