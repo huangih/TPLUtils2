@@ -26,7 +26,7 @@ public class NetHoldMan extends Thread {
 		for (;;) {
 			try {
 				String[] strs = taskQueue.take();
-				Integer taskId = new Integer(strs[0]);
+				Integer taskId = Integer.parseInt(strs[0]);
 				if (taskId == 0)
 					break;
 				switch (taskId) {

@@ -78,7 +78,7 @@ public class CUS {
 			e.printStackTrace();
 		}
 		NetHostName = props.getProperty("NetHostName", "libsys.tpml.edu.tw");
-		NetPort = new Integer(props.getProperty("NetPort", "17171"));
+		NetPort = Integer.parseInt(props.getProperty("NetPort", "17171"));
 		TaskTabText = props.getProperty("TaskTabText");
 		QueryHoldsTabText = props.getProperty("QueryHoldsTabText");
 		TransitStatusMA = props.getProperty("TransitStatusMA");
@@ -194,7 +194,7 @@ public class CUS {
 		for (Object key : properties.keySet()) {
 			int index = ((String) key).indexOf("需提醒館藏地_");
 			if (index == 0) {
-				int value = new Integer((String) properties.getProperty((String) key));
+				int value = Integer.parseInt((String) properties.getProperty((String) key));
 				specialLocationMap.put(((String) key).substring(7), value);
 			}
 		}
@@ -202,7 +202,7 @@ public class CUS {
 		for (Object key : properties.keySet()) {
 			int index = ((String) key).indexOf("需提醒館藏類型_");
 			if (index == 0) {
-				int value = new Integer((String) properties.getProperty((String) key));
+				int value = Integer.parseInt((String) properties.getProperty((String) key));
 				specialItemtypeMap.put(((String) key).substring(8), value);
 			}
 		}
@@ -210,7 +210,7 @@ public class CUS {
 		for (Object key : properties.keySet()) {
 			int index = ((String) key).indexOf("需提醒館藏館_");
 			if (index == 0) {
-				int value = new Integer((String) properties.getProperty((String) key));
+				int value = Integer.parseInt((String) properties.getProperty((String) key));
 				specialLibraryMap.put(((String) key).substring(7), value);
 			}
 		}
@@ -274,7 +274,7 @@ public class CUS {
 		CR = new ColorRegistry(display);
 		for (String key : regColorMap.keySet()) {
 			String[] ss = regColorMap.get(key).split(",");
-			CR.put(key, new RGB(new Integer(ss[0]), new Integer(ss[1]), new Integer(ss[2])));
+			CR.put(key, new RGB(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]), Integer.parseInt(ss[2])));
 		}
 		FR = new FontRegistry(display);
 		// TODO Auto-generated method stub

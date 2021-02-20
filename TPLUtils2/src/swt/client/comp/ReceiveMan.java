@@ -210,27 +210,6 @@ public class ReceiveMan {
 			break;
 
 		case 2:
-			String library = respsChk.get("NS");
-			if (CUS.specialLibraryMap.containsKey(library))
-				srl.add(getStyleRange(this.locText, library + "\n", CUS.specialLibraryMap.get(library), display));
-//				this.locText.setForeground(color);
-
-			if (CUS.specialLocationMap.containsKey(location))
-				srl.add(getStyleRange(this.locText, location + "\n", CUS.specialLocationMap.get(location), display));
-//				// 陳躍升20140120新增熱門館藏註記
-//				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-//					locText.setText(location + "\n熱門館藏");
-//				else
-//					locText.setText(location);
-//
-//				locText.setForeground(color);
-//			} else {
-//				// 陳躍升20140120新增熱門館藏註記
-//				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-//					locText.setText("熱門館藏");
-//
-//			}
-
 			respStr += "請上架至" + location + "\n";
 
 			break;
@@ -241,32 +220,6 @@ public class ReceiveMan {
 			break;
 
 		default:
-			if (CUS.specialLocationMap.containsKey(location))
-				srl.add(getStyleRange(this.locText, location + "\n", CUS.specialLocationMap.get(location), display));
-//			if (CUS.specialItemtypeMap.containsKey(itemType)) {
-//				this.locText.append("熱門館藏!");
-//				color = display.getSystemColor(CUS.specialItemtypeMap.get(itemType));
-//				this.locText.setForeground(color);
-//			}
-//			if (CUS.specialLocationMap.containsKey(location)) {
-////				Display display = Display.getCurrent();
-////				display = locText.getDisplay();
-//				color = display.getSystemColor(CUS.specialLocationMap.get(location));
-//
-//				// 陳躍升20140120新增熱門館藏註記
-//				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-//					locText.setText(location + "熱門館藏");
-//				else
-//					locText.setText(location);
-//
-//				locText.setForeground(color);
-//			} else {
-//				// 陳躍升20140120新增熱門館藏註記
-//				if (respsChk.get("IG").equals("HOT-BOOK") || respsChk.get("IG").equals("HOT-BA"))
-//					locText.setText("熱門館藏");
-//
-//			}
-//
 			for (String key : respsChk.keySet()) {
 				respStr += key + respsChk.get(key) + "^";
 			}
@@ -274,6 +227,16 @@ public class ReceiveMan {
 
 			break;
 		}
+
+		if (style != 1 && style != 3 && style != 5) {
+			String library = respsChk.get("NS");
+			if (CUS.specialLibraryMap.containsKey(library))
+				srl.add(getStyleRange(this.locText, library + "\n", CUS.specialLibraryMap.get(library), display));
+
+			if (CUS.specialLocationMap.containsKey(location))
+				srl.add(getStyleRange(this.locText, location + "\n", CUS.specialLocationMap.get(location), display));
+		}
+
 		if (style != 3 && CUS.specialItemtypeMap.containsKey(itemType)) {
 			String s = itemType.startsWith("HOT-") ? "熱門館藏!" : itemType;
 			srl.add(getStyleRange(this.locText, s, CUS.specialItemtypeMap.get(itemType), display));

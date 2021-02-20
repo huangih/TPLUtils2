@@ -33,7 +33,7 @@ public class PrintManager extends Thread {
 			String[] strs;
 			try {
 				strs = taskQueue.take();
-				Integer taskId = new Integer(strs[0]);
+				Integer taskId = Integer.valueOf(strs[0]);
 				if (taskId == 0) {
 					if (plist.size() > 0)
 						printerTask();
