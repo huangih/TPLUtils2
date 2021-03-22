@@ -370,7 +370,7 @@ public class NetManager extends Thread {
 		Map<String, String> m = resps.getDataMap();
 		if (m.containsKey("MA"))
 			throwError("chkItemStatus", m);
-		this.needTransit = "Y".equals(m.get("nr")) && !CUS.BranchID.contains(m.get("nu")) && CUS.MULTIRECEIVEITEM;
+		this.needTransit = "Y".equals(m.get("nr")) && (!CUS.MULTIRECEIVEITEM || !CUS.BranchID.contains(m.get("nu")));
 		this.pkBrn = m.get("HO");
 		List<Map<String, String>> l = resps.getLists("lt");
 		this.status.clear();
