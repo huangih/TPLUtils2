@@ -264,18 +264,22 @@ public class NetManager extends Thread {
 
 						if (m.containsKey("sN"))
 							displayResult(5, m);
-						else if (m.containsKey("sM")) // 20141223 陳躍升新同讀者給同流水號程式
-							displayResult(6, m);
+//						else if (m.containsKey("sM")) // 20141223 陳躍升新同讀者給同流水號程式
+//							displayResult(6, m);
 						else
 							displayResult(1, m);
 						break;
 					}
 
 					if (needTransit) {
-						m = transitItem(m);
-						// 20140505 陳躍升新增熱門館藏點收顯示
-						m.put("IG", ig);
-						displayResult(3, m);
+						if (CUS.noTransitItemTypes.contains(ig))
+							displayResult(6, m); // 20210415 新增附件不自動調撥，使用提醒顯示
+						else {
+							m = transitItem(m);
+							// 20140505 陳躍升新增熱門館藏點收顯示
+							m.put("IG", ig);
+							displayResult(3, m);
+						}
 						break;
 					}
 					m.put("MA", this.status.toString());
@@ -381,9 +385,9 @@ public class NetManager extends Thread {
 //		RespData resp_IG = this.ncs.getRespDatas("gM",
 //				new String[] { "list_IG.pl " + taskId }, true);
 		// 20201112黃裔宏修改抓取館藏類型方法
-		RespData resp_IG = this.ncs.getRespDatas("GA", new String[] { taskId }, true);
+		resps = this.ncs.getRespDatas("GA", new String[] { taskId }, true);
 //		Map<String, String> m_IG = resp_IG.getDataMap();
-		m.put("IG", resp_IG.getDataMap().get("IG"));
+		m.put("IG", resps.getDataMap().get("IG"));
 		return m;
 	}
 
@@ -426,7 +430,9 @@ public class NetManager extends Thread {
 		return m;
 	}
 
-	public String getSeqNum(int i) {
+	public String getSeqNum(int i, String s) {
+		if (i == 6)
+			return String.format("%3d-%s", CUS.curSeqNum - 1, s);
 		if (i > 1)
 			return String.format("%03d-%d", CUS.curSeqNum - 1, subSeqNum++);
 		return String.format("%03d", CUS.curSeqNum - i);
@@ -447,8 +453,9 @@ public class NetManager extends Thread {
 		case 3:
 		case 4:
 		case 5:
+		case 6:
 			// case 6:
-			seqNum = m.containsKey("warn") ? m.get("warn") : getSeqNum(style);
+			seqNum = m.containsKey("warn") ? m.get("warn") : getSeqNum(style, style == 6 ? m.get("IG") : "");
 			if (style == 5) {
 				// 2014.12.23陳躍升新增同讀者給同流水號程式
 				String sN = m.get("sN");
@@ -466,7 +473,7 @@ public class NetManager extends Thread {
 			}
 
 			this.ItemDatas[0] = seqNum;
-			((ItemListTable) showMap[style]).addListItem(this.ItemDatas); // 原程式
+			((ItemListTable) showMap[style == 6 ? 2 : style]).addListItem(this.ItemDatas); // 原程式
 			if (style == 3) {
 				String[] printStrs = new String[9];
 				System.arraycopy(this.ItemDatas, 1, printStrs, 4, 5);

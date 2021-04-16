@@ -56,7 +56,7 @@ public class ReceiveMan {
 		createInComp();
 		diagComposite.setLayout(new FillLayout());
 		this.diagText = createTextComp(diagComposite, SWT.SINGLE, "Arial", 24, SWT.BOLD);
-		this.diagText.setText(netMan.getSeqNum(0));
+		this.diagText.setText(netMan.getSeqNum(0, ""));
 		this.locText = createStyledTextComp(diagComposite, SWT.MULTI, "Arial", 18, SWT.BOLD);
 		this.locText.setText("");
 
@@ -169,6 +169,7 @@ public class ReceiveMan {
 		case 3:
 		case 4:
 		case 5:
+		case 6:
 			// diagText.setForeground(colors[style - 1]);
 			this.diagText.setForeground(CUS.CR.get(styleColor[style - 1]));
 			this.diagText.setText(seqNum);
@@ -190,6 +191,7 @@ public class ReceiveMan {
 		}
 		String itemType = respsChk.get("IG");
 		String location = respsChk.get("IL");
+		String library = respsChk.get("NS");
 		List<StyleRange> srl = new ArrayList<StyleRange>();
 		switch (style) {
 		case 0:
@@ -218,6 +220,9 @@ public class ReceiveMan {
 			respStr += "從" + respsChk.get("nt") + "調撥至" + respsChk.get("nu") + "\n";
 
 			break;
+		case 6:
+			respStr += "未調撥它館資料--" + library + "--" + respsChk.get("IG") + "\n";
+			break;
 
 		default:
 			for (String key : respsChk.keySet()) {
@@ -229,7 +234,6 @@ public class ReceiveMan {
 		}
 
 		if (style != 1 && style != 3 && style != 5) {
-			String library = respsChk.get("NS");
 			if (CUS.specialLibraryMap.containsKey(library))
 				srl.add(getStyleRange(this.locText, library + "\n", CUS.specialLibraryMap.get(library), display));
 
@@ -242,7 +246,12 @@ public class ReceiveMan {
 			srl.add(getStyleRange(this.locText, s, CUS.specialItemtypeMap.get(itemType), display));
 		}
 
-		if (srl.size() > 0)
+		if (style == 6) {
+			String s = library + "-" + itemType + "\n";
+			srl.add(getStyleRange(this.locText, s, SWT.COLOR_RED, display));
+		}
+
+		if (!srl.isEmpty())
 			this.locText.setStyleRanges(srl.toArray(new StyleRange[0]));
 		this.resText.setText(respStr);
 	}

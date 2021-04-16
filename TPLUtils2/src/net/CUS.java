@@ -2,18 +2,28 @@ package net;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Scanner;
+
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.swt.graphics.RGB;
@@ -23,7 +33,7 @@ import tw.gov.tpl.holdnotice_service.HoldnoticeService;
 import tw.gov.tpl.holdnotice_service.HoldnoticeServicePortType;
 
 public class CUS {
-	final static private String VERSION = "1.0.20150413";
+	final static private String VERSION = "1.0.20210415";
 	final static private String PROGNAME = "TPLUtils2";
 	final static private String URLPATH = "http://webcat4.tpml.edu.tw/tpl.notice.hold.service/";
 	private static Properties properties = new Properties();
@@ -68,6 +78,7 @@ public class CUS {
 	public static boolean MULTIRECEIVEITEM = false;
 	public static Map<String, String> ChargedCheckMap = new HashMap<String, String>();
 	public static String CheckinLocation = "NEWARRIVAL";
+	public static List<String> noTransitItemTypes;
 
 	static {
 		Properties props = new Properties();
@@ -180,6 +191,8 @@ public class CUS {
 		BranchID = properties.getProperty("館別代號");
 		if (properties.containsKey("是否多館混收通還"))
 			MULTIRECEIVEITEM = "Y".equals(properties.get("是否多館混收通還"));
+		if (properties.containsKey("點收不調撥館藏類型"))
+			noTransitItemTypes = Arrays.asList(properties.getProperty("點收不調撥館藏類型").split(","));
 		maxSeqNum = Integer.parseInt((String) properties.getProperty("流水編號最大值"));
 		curSeqNum = Integer.parseInt((String) properties.getProperty("目前之流水編號"));
 		ppNum = Integer.parseInt((String) properties.getProperty("每頁列印份數"));
@@ -217,11 +230,31 @@ public class CUS {
 	}
 
 	public static void saveProp() {
-		properties.put("目前之流水編號", String.valueOf(curSeqNum));
+		Path cusFile = Paths.get("CUS.txt");
+		StringBuilder sb = new StringBuilder();
+		BufferedReader rd;
 		try {
-			properties.storeToXML(new FileOutputStream("CUS.txt"), "checkReceiveItem", "UTF-8");
-		} catch (FileNotFoundException e) {
+			rd = Files.newBufferedReader(cusFile, charset);
+			String s;
+			while ((s = rd.readLine()) != null) {
+				if (s.contains("目前之流水編號")) {
+					int inx = s.indexOf('>');
+					int inx1 = s.indexOf('<', inx);
+					s.replace(s.subSequence(inx, inx1), ">" + curSeqNum + "<");
+				}
+				sb.append(s + System.lineSeparator());
+			}
+			rd.close();
+		} catch (IOException e) {
 			e.printStackTrace();
+		}
+
+		BufferedWriter wr;
+		try {
+			wr = Files.newBufferedWriter(cusFile, charset);
+			wr.append(sb);
+			wr.flush();
+			wr.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
