@@ -2,10 +2,10 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 	<comment>checkReceiveItem</comment>
-	<entry key="自訂Title">臺北市立圖書館圖書狀態點收查詢系統</entry>
-	<entry key="館別代號">G14</entry>
+	<entry key="自訂Title">外掛-附件不調撥</entry>
+	<entry key="館別代號">C01,NRRC,ABS,MIC,CAC</entry>
 	<!--"館別代號"設定內的館別代號，以第一個館別代號為主要所在館別，其餘設定的館別同時會認定為"預約到館"點收給予接下的流水編號。 -->
-	<!-- <entry key="是否多館混收通還">Y</entry> -->
+	<entry key="是否多館混收通還">Y</entry>
 	<!--"是否多館混收通還"預設為N,不需使用的分館請移除此行，-->
 	<!-- 供同一所在地有2個以上館別代號的館使用(如總館有C01,NRRC,ABS)，以避免點收時彼此產生調撥。-->
 	<!-- 同時需配合"館別代號"設定，將所有彼此不調撥通還的館別代號以逗號(,)分隔設定 -->
@@ -19,9 +19,11 @@
 	<entry key="需提醒館藏類型_HOT-BOOK">4</entry>
 	<entry key="流水編號種類">0</entry>
 	<entry key="流水編號最小值">1</entry>
-	<entry key="流水編號最大值">4000</entry>
-	<entry key="目前之流水編號">2441</entry>
-	<entry key="每頁上下列印份數">2</entry>
-	<entry key="每頁左右列印份數">2</entry>
-	<entry key="每頁列印份數">4</entry>
+	<entry key="流水編號最大值">100</entry>
+	<entry key="目前之流水編號">2</entry>
+	<entry key="每頁上下列印份數">1</entry>
+	<entry key="每頁左右列印份數">1</entry>
+	<entry key="每頁列印份數">1</entry>
+      <entry key="需提醒館藏地_TEM-2">3</entry>
+      <entry key="需提醒館藏地_TEM-1">3</entry>
 </properties>

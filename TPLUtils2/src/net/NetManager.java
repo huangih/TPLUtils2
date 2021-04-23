@@ -219,7 +219,9 @@ public class NetManager extends Thread {
 						boolean b1 = "LIBRARY".equals(reason);
 						boolean b2 = "HOLD".equals(reason);
 						boolean b3 = rvBrn.equals(pkBrn);
-						if ((b1 && b) || (b2 && !(b && b3))) {// 若為回館調撥且有人預約或預約調撥但已無預約或預約取書館已變更
+						boolean b4 = !CUS.noTransitItemTypes.isEmpty() && CUS.noTransitItemTypes.contains(ig); // 查檢itemType是否為不自動調撥類型
+						if ((b1 && (b || b4)) || (b2 && !(b && b3))) {// 若為回館調撥且有人預約或預約調撥但已無預約或預約取書館已變更
+																		// 20210516 加若為回館調撥且屬noTransitItemTypes
 							m = receiveItem(taskId, rvBrn);// 摸擬為調撥目的館點收，再進行下一check迴圏
 							ma = m.remove("MA");
 							continue;
@@ -272,7 +274,7 @@ public class NetManager extends Thread {
 					}
 
 					if (needTransit) {
-						if (CUS.noTransitItemTypes.contains(ig))
+						if (!CUS.noTransitItemTypes.isEmpty() && CUS.noTransitItemTypes.contains(ig))
 							displayResult(6, m); // 20210415 新增附件不自動調撥，使用提醒顯示
 						else {
 							m = transitItem(m);

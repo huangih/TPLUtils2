@@ -8,13 +8,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,7 +20,6 @@ import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Scanner;
 
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.resource.FontRegistry;
@@ -33,7 +30,7 @@ import tw.gov.tpl.holdnotice_service.HoldnoticeService;
 import tw.gov.tpl.holdnotice_service.HoldnoticeServicePortType;
 
 public class CUS {
-	final static private String VERSION = "1.0.20210415";
+	final static private String VERSION = "1.0.20210423";
 	final static private String PROGNAME = "TPLUtils2";
 	final static private String URLPATH = "http://webcat4.tpml.edu.tw/tpl.notice.hold.service/";
 	private static Properties properties = new Properties();
@@ -78,7 +75,7 @@ public class CUS {
 	public static boolean MULTIRECEIVEITEM = false;
 	public static Map<String, String> ChargedCheckMap = new HashMap<String, String>();
 	public static String CheckinLocation = "NEWARRIVAL";
-	public static List<String> noTransitItemTypes;
+	public static List<String> noTransitItemTypes = new ArrayList<String>();
 
 	static {
 		Properties props = new Properties();
@@ -230,11 +227,11 @@ public class CUS {
 	}
 
 	public static void saveProp() {
-		Path cusFile = Paths.get("CUS.txt");
+		File cusFile = new File("CUS.txt");
 		StringBuilder sb = new StringBuilder();
 		BufferedReader rd;
 		try {
-			rd = Files.newBufferedReader(cusFile, charset);
+			rd = new BufferedReader(new InputStreamReader(new FileInputStream(cusFile), charset));
 			String s;
 			while ((s = rd.readLine()) != null) {
 				if (s.contains("目前之流水編號")) {
@@ -251,7 +248,7 @@ public class CUS {
 
 		BufferedWriter wr;
 		try {
-			wr = Files.newBufferedWriter(cusFile, charset);
+			wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(cusFile), charset));
 			wr.append(sb);
 			wr.flush();
 			wr.close();
@@ -310,7 +307,5 @@ public class CUS {
 			CR.put(key, new RGB(Integer.parseInt(ss[0]), Integer.parseInt(ss[1]), Integer.parseInt(ss[2])));
 		}
 		FR = new FontRegistry(display);
-		// TODO Auto-generated method stub
-
 	}
 }
