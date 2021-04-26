@@ -30,7 +30,7 @@ import tw.gov.tpl.holdnotice_service.HoldnoticeService;
 import tw.gov.tpl.holdnotice_service.HoldnoticeServicePortType;
 
 public class CUS {
-	final static private String VERSION = "1.0.20210423";
+	final static private String VERSION = "1.0.20210426";
 	final static private String PROGNAME = "TPLUtils2";
 	final static private String URLPATH = "http://webcat4.tpml.edu.tw/tpl.notice.hold.service/";
 	private static Properties properties = new Properties();
@@ -73,6 +73,7 @@ public class CUS {
 	public static Map<String, Integer> specialLibraryMap = new HashMap<String, Integer>();
 	public static boolean EXPANDAVAILHOLDDATE = false;
 	public static boolean MULTIRECEIVEITEM = false;
+	public static boolean APPENDIXWARNPRINT = false;
 	public static Map<String, String> ChargedCheckMap = new HashMap<String, String>();
 	public static String CheckinLocation = "NEWARRIVAL";
 	public static List<String> noTransitItemTypes = new ArrayList<String>();
@@ -188,6 +189,8 @@ public class CUS {
 		BranchID = properties.getProperty("館別代號");
 		if (properties.containsKey("是否多館混收通還"))
 			MULTIRECEIVEITEM = "Y".equals(properties.get("是否多館混收通還"));
+		if (properties.containsKey("再處理提醒單列印"))
+			APPENDIXWARNPRINT = "Y".equals(properties.get("再處理提醒單列印"));
 		if (properties.containsKey("點收不調撥館藏類型"))
 			noTransitItemTypes = Arrays.asList(properties.getProperty("點收不調撥館藏類型").split(","));
 		maxSeqNum = Integer.parseInt((String) properties.getProperty("流水編號最大值"));

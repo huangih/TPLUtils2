@@ -86,7 +86,10 @@ public class PrintManager extends Thread {
 		int height = gc.getFontMetrics().getHeight();
 		po.x += this.hMargin;
 		po.y += this.vMargin;
-		gc.drawString(CUS.brnClynumMap.get(strs[1]) + strs[2], po.x, po.y);
+		if (strs[2].startsWith("-"))
+			gc.drawString(strs[1] + strs[2], po.x, po.y);
+		else
+			gc.drawString(CUS.brnClynumMap.get(strs[1]) + strs[2], po.x, po.y);
 		po.y += height;
 		gc.drawString(CUS.brnNameMap.get(strs[1]), po.x, po.y);
 		po.y += height;

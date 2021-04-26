@@ -456,7 +456,6 @@ public class NetManager extends Thread {
 		case 4:
 		case 5:
 		case 6:
-			// case 6:
 			seqNum = m.containsKey("warn") ? m.get("warn") : getSeqNum(style, style == 6 ? m.get("IG") : "");
 			if (style == 5) {
 				// 2014.12.23陳躍升新增同讀者給同流水號程式
@@ -476,7 +475,7 @@ public class NetManager extends Thread {
 
 			this.ItemDatas[0] = seqNum;
 			((ItemListTable) showMap[style == 6 ? 2 : style]).addListItem(this.ItemDatas); // 原程式
-			if (style == 3) {
+			if (style == 3 || (style == 6 && CUS.APPENDIXWARNPRINT)) {
 				String[] printStrs = new String[9];
 				System.arraycopy(this.ItemDatas, 1, printStrs, 4, 5);
 				String reason = m.get("nx");
@@ -488,9 +487,13 @@ public class NetManager extends Thread {
 				else
 					reason = ""; // 其他原因
 				//
-				System.arraycopy(new String[] { "-1", m.get("nt"), m.get("nu"), reason }, 0, printStrs, 0, 4);
+				String[] tempss = new String[] { "-1", m.get("nt"), m.get("nu"), reason };
+				if (style == 6)
+					System.arraycopy(new String[] { m.get("NS"), "-" + m.get("IG") }, 0, tempss, 2, 2);
+				System.arraycopy(tempss, 0, printStrs, 0, 4);
 				printMan.addTask(printStrs);
 			}
+
 			break;
 
 		default:
